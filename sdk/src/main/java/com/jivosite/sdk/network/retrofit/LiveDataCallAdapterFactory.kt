@@ -23,7 +23,12 @@ class LiveDataCallAdapterFactory(
             return null
         }
 
-        val observableType = getParameterUpperBound(0, returnType as ParameterizedType)
+        // Add type checking before casting to prevent ClassCastException
+        if (returnType !is ParameterizedType) {
+            return null
+        }
+
+        val observableType = getParameterUpperBound(0, returnType)
         val rawObservableType = getRawType(observableType)
         require(rawObservableType == ApiResponse::class.java) { "Type must be a Response" }
         require(observableType is ParameterizedType) { "Response must be parameterized" }
